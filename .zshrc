@@ -91,13 +91,21 @@ alias \
 [ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d" v="nvim"
 
 # LS / EZA
-command -v eza >/dev/null 2>&1 || eza() { ls "$@"; }
-  l()   { eza -F -- "$@"; }
-  ll()  { eza -lF -- "$@"; }
-  la()  { eza -aF -- "$@"; }
-  lla() { eza -laF -- "$@"; }
-  lt()  { eza -TaF -- "$@"; }
-  llt() { eza -Tal -- "$@"; }
+if command -v eza >/dev/null 2>&1; then
+    l()   { eza -F -- "$@"; }
+    ll()  { eza -lF -- "$@"; }
+    la()  { eza -aF -- "$@"; }
+    lla() { eza -laF -- "$@"; }
+    lt()  { eza -TaF -- "$@"; }
+    llt() { eza -Tal -- "$@"; }
+else
+    l()   { ls -F -- "$@"; }
+    ll()  { ls -lF -- "$@"; }
+    la()  { ls -aF -- "$@"; }
+    lla() { ls -laF -- "$@"; }
+    lt()  { ls -aF -- "$@"; }
+    llt() { ls -laF -- "$@"; }
+fi
 
 # TMUX
 [ -x "$(command -v tmux)" ] && alias \
@@ -200,6 +208,7 @@ alias \
   cpv='rsync -ah --info=progress2' \
   mvv='rsync -ah --remove-source-files --info=progress2'
 
+# Tmux nvim opencode IDE
 ide() {
     local dir="${1:-.}"
     local name
@@ -210,32 +219,17 @@ ide() {
         tmux attach -t "$name"
         return
     fi
-    tmux new-session -d \
-        -s "$name" \
-        -n main \
-        -c "$dir" \
-        "nvim '$dir'"
-    tmux split-window -h \
-        -t "$name:main" \
-        -c "$dir" \
-        "zsh -ic 'opc \"\$1\"' _ '$dir'"
+    tmux new-session -d -s "$name" -n main -c "$dir" "nvim '$dir'"
+    tmux split-window -h -t "$name:main" -c "$dir" "opencode '$dir'"
     tmux select-pane -L -t "$name:main"
-    tmux split-window -v \
-        -t "$name:main" \
-        -c "$dir" \
-        "zsh"
-    tmux resize-pane -y 2 \
-        -t "$name:main"
-    tmux select-pane -t "$name:main.0"
     tmux attach -t "$name"
 }
 alias i="ide"
 
-
 # list path to other zsh shell opened
 lssh() {
   ps au |
-    awk '$11 == "/usr/bin/zsh" || $11 == "/bin/zsh" { print $2 }' |
+    awk '$11 == "/usr/bin/zsh" || $11 == "/usr/sbin/zsh" || $11 == "/bin/zsh" { print $2 }' |
     xargs pwdx |
     awk '{ print $2 }' |
     sed -n "\|^${2}.*|p" |

@@ -87,13 +87,21 @@ alias \
 [ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d" v="nvim"
 
 # LS / EZA
-command -v eza >/dev/null 2>&1 || eza() { ls "$@"; }
-  l()   { eza -F -- "$@"; }
-  ll()  { eza -lF -- "$@"; }
-  la()  { eza -aF -- "$@"; }
-  lla() { eza -laF -- "$@"; }
-  lt()  { eza -TaF -- "$@"; }
-  llt() { eza -Tal -- "$@"; }
+if command -v eza >/dev/null 2>&1; then
+    l()   { eza -F -- "$@"; }
+    ll()  { eza -lF -- "$@"; }
+    la()  { eza -aF -- "$@"; }
+    lla() { eza -laF -- "$@"; }
+    lt()  { eza -TaF -- "$@"; }
+    llt() { eza -Tal -- "$@"; }
+else
+    l()   { ls -F -- "$@"; }
+    ll()  { ls -lF -- "$@"; }
+    la()  { ls -aF -- "$@"; }
+    lla() { ls -laF -- "$@"; }
+    lt()  { ls -aF -- "$@"; }
+    llt() { ls -laF -- "$@"; }
+fi
 
 # TMUX
 [ -x "$(command -v tmux)" ] && alias \
