@@ -33,10 +33,11 @@ curl --create-dirs -Lo ~/.config/tmux/tmux.conf https://raw.githubusercontent.co
 | eza | `eza` | Fast `ls` with tree (`lt`, `llt`) |
 | bat | `bat` | Syntax-highlighted `cat`; git diffs |
 | ripgrep | `ripgrep` | Fast `rg` grep |
+| yazi | `yazi` | terminal file manager |
 
 ```bash
 # Ubuntu/Debian
-sudo apt install -y fzf eza bat ripgrep
+sudo apt install -y fzf eza bat ripgrep yazi
 ```
 
 ## Features
