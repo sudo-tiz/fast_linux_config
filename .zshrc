@@ -202,11 +202,28 @@ alias \
   va='source .venv/bin/activate || source .env/bin/activate' \
   veva='python -m venv .venv && source .venv/bin/activate' \
   da='deactivate'
-#
+
 # Copy progress bar
 [ -x "$(command -v rsync)" ] && alias \
   cpv='rsync -ah --info=progress2' \
   mvv='rsync -ah --remove-source-files --info=progress2'
+
+# YAZI
+if command -v yazi >/dev/null 2>&1; then
+    yazi-cd() (
+        local tmp dir
+        tmp="$(mktemp)" || return 1
+        trap 'rm -f -- "$tmp"' EXIT HUP INT QUIT TERM
+        yazi --cwd-file "$tmp" "$@" || return
+        if [[ -f "$tmp" ]]; then
+            dir="$(<"$tmp")"
+            if [[ -d "$dir" && "$dir" != "$PWD" ]]; then
+                cd -- "$dir" && exec "${SHELL:-bash}"
+            fi
+        fi
+    )
+    alias y='yazi-cd'
+fi
 
 # Tmux nvim opencode IDE
 ide() {

@@ -103,6 +103,24 @@ else
     llt() { ls -laF -- "$@"; }
 fi
 
+# YAZI
+if command -v yazi >/dev/null 2>&1; then
+    yazi-cd() (
+        local tmp dir
+        tmp="$(mktemp)" || return 1
+        trap 'rm -f -- "$tmp"' EXIT HUP INT QUIT TERM
+        yazi --cwd-file "$tmp" "$@" || return
+        if [[ -f "$tmp" ]]; then
+            dir="$(<"$tmp")"
+            if [[ -d "$dir" && "$dir" != "$PWD" ]]; then
+                cd -- "$dir" && exec "${SHELL:-bash}"
+            fi
+        fi
+    )
+    alias y='yazi-cd'
+fi
+
+
 # TMUX
 [ -x "$(command -v tmux)" ] && alias \
   t="tmux" \
